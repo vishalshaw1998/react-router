@@ -1,48 +1,27 @@
-import React, { useContext, useRef } from "react";
-import { PostContext } from "./App";
+import React, { useRef } from "react";
+import { connect } from "react-redux";
 
-function Timeline() {
-    const { post, setPost } = useContext(PostContext);
+function Timeline(props) {
     const postBox = useRef();
-    let workingNode = null;
-    let commentIndex = null;
+    let currentCommentBox = null;
+    let currentCommentBoxIndex = null;
     function handleAddPost() {
         if (postBox.current.value !== "") {
-            setPost([
-                ...post,
-                {
-                    title: postBox.current.value,
-                    comments: [],
-                    likes: 0,
-                    dislikes: 0,
-                },
-            ]);
+            props.addPost(postBox.current.value);
             postBox.current.value = "";
         }
     }
-    function handleOnchange(node, idx) {
-        workingNode = node;
-        commentIndex = idx;
+    function changeTarget(node, index) {
+        currentCommentBox = node;
+        currentCommentBoxIndex = index;
     }
-    function handleAddComment(idx) {
-        if (idx === commentIndex && workingNode.value !== "") {
-            let tempPost = [...post];
-            tempPost[idx].comments.push(workingNode.value);
-            setPost(tempPost);
-            workingNode.value = "";
-        } else {
-            return;
+    function addComment(index) {
+        if (
+            currentCommentBoxIndex === index &&
+            currentCommentBox.value !== ""
+        ) {
+            props.addComment(currentCommentBox.value, index);
         }
-    }
-    function handleLike(idx) {
-        let tempPost = [...post];
-        tempPost[idx].likes += 1;
-        setPost(tempPost);
-    }
-    function handleDislike(idx) {
-        let tempPost = [...post];
-        tempPost[idx].dislikes += 1;
-        setPost(tempPost);
     }
     return (
         <div>
@@ -60,11 +39,13 @@ function Timeline() {
                 ></textarea>
                 <button
                     className="btn btn-block btn-primary mt-2"
-                    onClick={handleAddPost}
+                    onClick={() => {
+                        handleAddPost();
+                    }}
                 >
                     Add
                 </button>
-                {post.map((item, index) => {
+                {props.post.map((item, index) => {
                     return (
                         <div
                             key={index}
@@ -76,9 +57,7 @@ function Timeline() {
                                 <span className="ml-3">
                                     <button
                                         className="btn btn-primary"
-                                        onClick={() => {
-                                            handleLike(index);
-                                        }}
+                                        onClick={() => props.addLike(index)}
                                     >
                                         Like
                                     </button>
@@ -88,7 +67,7 @@ function Timeline() {
                                     <button
                                         className="btn btn-primary"
                                         onClick={() => {
-                                            handleDislike(index);
+                                            props.addDislike(index);
                                         }}
                                     >
                                         Dislike
@@ -98,16 +77,18 @@ function Timeline() {
                             <div>
                                 <div className="form-group mt-3">
                                     <textarea
+                                        onChange={(e) =>
+                                            changeTarget(e.target, index)
+                                        }
                                         className="form-control"
                                         rows="3"
-                                        onChange={(e) => {
-                                            handleOnchange(e.target, index);
-                                        }}
                                     ></textarea>
                                 </div>
                                 <button
                                     className="btn btn-primary mb-2"
-                                    onClick={() => handleAddComment(index)}
+                                    onClick={() => {
+                                        addComment(index);
+                                    }}
                                 >
                                     Add Comment
                                 </button>
@@ -132,4 +113,31 @@ function Timeline() {
     );
 }
 
-export default Timeline;
+const mapStateToProps = (state) => {
+    return {
+        post: state.posts,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        addPost: function (post) {
+            return dispatch({ type: "ADD_POST", title: post });
+        },
+        addLike: function (index) {
+            return dispatch({ type: "ADD_LIKE", id: index });
+        },
+        addDislike: function (index) {
+            return dispatch({ type: "ADD_DISLIKE", id: index });
+        },
+        addComment: function (comment, index) {
+            return dispatch({
+                type: "ADD_COMMENT",
+                id: index,
+                comment: comment,
+            });
+        },
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Timeline);

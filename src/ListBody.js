@@ -1,24 +1,16 @@
-import React, { useContext } from "react";
-import { TodoContext } from "./App";
+import React from "react";
+import { connect } from "react-redux";
 
-function ListBody() {
-    const { todo, settodo } = useContext(TodoContext);
-    function handleDelete(index) {
-        settodo((prevState) => {
-            return prevState.filter((item, idx) => {
-                return idx !== index;
-            });
-        });
-    }
+function ListBody(props) {
     return (
         <div className="mt-4">
-            {todo.map((item, index) => {
+            {props.todo.map((item, index) => {
                 return (
                     <div key={index}>
                         <li className="list-group-item mt-4">{item}</li>
                         <button
                             className="btn btn-danger mt-1"
-                            onClick={() => handleDelete(index)}
+                            onClick={() => props.deleteTodo(index)}
                         >
                             Delete
                         </button>
@@ -29,4 +21,18 @@ function ListBody() {
     );
 }
 
-export default ListBody;
+const mapStateToProps = (state) => {
+    return {
+        todo: state.todos,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        deleteTodo: function (index) {
+            return dispatch({ type: "DELETE_TODO", id: index });
+        },
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ListBody);

@@ -1,13 +1,14 @@
-import React, { useContext, useRef } from "react";
+import React, { useRef } from "react";
 import ListBody from "./ListBody";
-import { TodoContext } from "./App";
+import { connect } from "react-redux";
 
-function Todo() {
+function Todo(props) {
     const inputValue = useRef();
-    const { settodo, todo } = useContext(TodoContext);
     function handleClick() {
-        settodo([...todo, inputValue.current.value]);
-        inputValue.current.value = "";
+        if (inputValue.current.value !== "") {
+            props.addTodo(inputValue.current.value);
+            inputValue.current.value = "";
+        }
     }
     return (
         <div>
@@ -20,7 +21,9 @@ function Todo() {
             />
             <button
                 className="btn btn-primary btn-block mt-4"
-                onClick={handleClick}
+                onClick={() => {
+                    handleClick();
+                }}
             >
                 Add
             </button>
@@ -29,4 +32,12 @@ function Todo() {
     );
 }
 
-export default Todo;
+const mapDispatchToProps = (dispatch) => {
+    return {
+        addTodo: function (todoItem) {
+            return dispatch({ type: "ADD_TODO", todo: todoItem });
+        },
+    };
+};
+
+export default connect(null, mapDispatchToProps)(Todo);
