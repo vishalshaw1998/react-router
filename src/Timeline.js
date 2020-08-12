@@ -21,6 +21,7 @@ function Timeline(props) {
             currentCommentBox.value !== ""
         ) {
             props.addComment(currentCommentBox.value, index);
+            currentCommentBox.value = "";
         }
     }
     return (

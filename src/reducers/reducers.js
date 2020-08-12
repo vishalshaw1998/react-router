@@ -1,13 +1,6 @@
-const initialStateForPost = [
-    {
-        title: "Hello World",
-        comments: ["Hey"],
-        likes: 0,
-        dislikes: 0,
-    },
-];
+const initialStateForPost = [];
 
-const initialStateForTodo = ["Watching TV", "Playing Games"];
+const initialStateForTodo = [];
 
 export const timelineReducer = (state = initialStateForPost, action) => {
     switch (action.type) {
