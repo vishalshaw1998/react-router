@@ -74,6 +74,12 @@ function Timeline(props) {
                                         Dislike
                                     </button>
                                 </span>
+                                <span
+                                    className="font-weight-bold"
+                                    style={{ float: "right" }}
+                                >
+                                    Posted On {item.time}
+                                </span>
                             </div>
                             <div>
                                 <div className="form-group mt-3">

@@ -7,7 +7,15 @@ export const timelineReducer = (state = initialStateForPost, action) => {
         case "ADD_POST":
             return [
                 ...state,
-                { title: action.title, comments: [], likes: 0, dislikes: 0 },
+                {
+                    title: action.title,
+                    comments: [],
+                    likes: 0,
+                    dislikes: 0,
+                    time: `${new Date().getFullYear()} ${
+                        new Date().getMonth() + 1
+                    } ${new Date().getDate()}`,
+                },
             ];
         case "ADD_LIKE":
             let tempState = [...state];
